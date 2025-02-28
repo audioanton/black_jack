@@ -1,5 +1,7 @@
 import unittest
 import deck
+import player
+
 
 class MyTestCase(unittest.TestCase):
     test_deck = deck.Deck()
@@ -24,6 +26,10 @@ class MyTestCase(unittest.TestCase):
         hand = test.give_start_hand()
         self.assertEqual(2, len(hand))
 
+    def test_sum_hand(self):
+        test_cards = [deck.Card(('Ace',11), 's'), deck.Card(('Ace',11), 's')]
+        p = player.Player(False, 100, test_cards)
+        self.assertEqual(12, p.sum_hand())
 
 if __name__ == '__main__':
     unittest.main()

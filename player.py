@@ -1,7 +1,6 @@
 class Player:
     def __init__(self, is_dealer, cash, hand):
         self.is_dealer = is_dealer
-        self.cards = []
         self.cash = cash
         self.bet = 0
         self.hand = hand
@@ -13,20 +12,25 @@ class Player:
             return "Error, only numbers"
         return f"Bet {self.bet} accepted." if self.cash >= self.bet > 0 else f"Faulty bet: {self.bet}. Current cash: {self.cash}."
 
-    def show_hand(self):
-        if self.is_dealer:
+    def show_hand(self, hidden):
+        if hidden:
             print("Dealer cards:")
             print("*hidden*")
             for num in range(1, len(self.hand)):
                 print(self.hand[num].show())
         else:
-            print("Player cards:")
+            if self.is_dealer:
+                print("Dealer cards:")
+            else:
+                print("Player cards:")
             for card in self.hand:
                 print(card.show())
 
     def sum_hand(self):
-        sum = 0
+        sum_hand = 0
         for card in self.hand:
-            # if card.suit == "Ace"...
-            sum += card.rank[1]
-        return sum
+            if card.rank[0] == 'Ace':
+                sum_hand += 1 if sum_hand + 11 > 21 else card.rank[1]
+            else:
+                sum_hand += card.rank[1]
+        return sum_hand
