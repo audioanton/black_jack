@@ -18,10 +18,10 @@ def show_sums(players):
 p1 = player.Player(False, 1000, cards.give_start_hand())
 dealer = player.Player(True, 0, cards.give_start_hand())
 
-def play_again(player, cards):
+def play_again(p, c):
     again = input("play again? (y/n)")
     if again.strip().startswith("y"):
-        player.hand.append(cards.give_card()) # not working
+        p.hand.append(c.give_card()) # not working
         return True
     else:
         print("stopping")
@@ -33,10 +33,12 @@ while True:
     print(b)
     if b.startswith("B"): break
 
-
 while True:
     show_hands([dealer, p1], True)
     show_sums([p1, dealer])
+    # implement check for sum being over 21
+    # implement aces being either 1 or 11
+    # implement dealer play
     b = play_again(p1, cards)
     if not b:
         break

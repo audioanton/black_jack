@@ -22,7 +22,7 @@ class Deck:
         random.shuffle(self.full_deck)
 
     def give_card(self):
-        self.full_deck.pop(-1)
+        return self.full_deck.pop()
 
     def give_start_hand(self):
         return [self.full_deck.pop(-1), self.full_deck.pop(-1)]
