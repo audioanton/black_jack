@@ -1,7 +1,5 @@
 import unittest
 import deck
-import player
-
 
 class MyTestCase(unittest.TestCase):
     test_deck = deck.Deck()
@@ -20,6 +18,11 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(test, self.test_deck.full_deck)
         self.test_deck.shuffle_deck()
         self.assertNotEqual(test, self.test_deck.full_deck)
+
+    def test_give_start_hand(self):
+        test = deck.Deck()
+        hand = test.give_start_hand()
+        self.assertEqual(2, len(hand))
 
 
 if __name__ == '__main__':

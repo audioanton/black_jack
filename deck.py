@@ -8,6 +8,9 @@ class Card:
         self.rank = rank
         self.suit = suit
 
+    def show(self):
+        return f"{self.rank[0]} of {self.suit}"
+
 class Deck:
     def __init__(self):
         self.full_deck = []
@@ -20,3 +23,6 @@ class Deck:
 
     def give_card(self):
         self.full_deck.pop(-1)
+
+    def give_start_hand(self):
+        return [self.full_deck.pop(-1), self.full_deck.pop(-1)]
