@@ -1,7 +1,7 @@
 class Player:
-    def __init__(self, is_dealer, cash, hand):
+    def __init__(self, is_dealer, hand):
         self.is_dealer = is_dealer
-        self.cash = cash
+        self.cash = 0
         self.bet = 0
         self.hand = hand
 
@@ -11,6 +11,13 @@ class Player:
         except ValueError:
             return "Error, only numbers"
         return f"Bet {self.bet} accepted." if self.cash >= self.bet > 0 else f"Faulty bet: {self.bet}. Current cash: {self.cash}."
+
+    def take_cash(self):
+        try:
+            self.cash = int(input("How much cash do you want to play with? "))
+        except ValueError:
+            return "Error, only numbers"
+        return f"{self.cash} accepted."
 
     def show_hand(self, hidden):
         if hidden:

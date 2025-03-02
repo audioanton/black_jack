@@ -1,70 +1,98 @@
 import deck
 import player
 
-cards = deck.Deck()
-
-cards.shuffle_deck()
-
-# TODO implement betting in loop
-
 def show_hands(players):
         for p in players:
             p.show_hand(True) if p.is_dealer else p.show_hand(False)
 
-p1 = player.Player(False, 1000, cards.give_start_hand())
-dealer = player.Player(True, 0, cards.give_start_hand())
-
-def play_again():
+def play_again(player):
     again = input("hit again? (y/n) ")
     if again.strip().startswith("y"):
-        p1.hand.append(cards.give_card())
+        player.hand.append(cards.give_card())
         return True
     else:
-        print(f"{p1.sum_hand()} Standing.")
+        print(f"{player.sum_hand()} Standing.")
         return False
 
-def check_results(end):
-    for p in [p1, dealer]:
+def calculate_bet(result, player):
+    if "player" in result:
+        player.cash += player.bet
+    elif "dealer" in result:
+        player.cash -= player.bet
+    return player.cash
+
+def check_results(end, players):
+    results = ["dealer wins!", "player wins!", "TIE! Bet is returned", "BUST!", "Blackjack!"]
+
+    for p in players:
         if p.sum_hand() == 21:
-            print("Blackjack!")
-            return "dealer" if p.is_dealer else "player"
+            return f"{results[-1]} {results[0]}" if p.is_dealer else f"{results[-1]} {results[1]}"
         if p.sum_hand() > 21:
-            print(f"BUST!")
-            return "player" if p.is_dealer else "dealer"
+            return f"{results[3]} {results[1]}" if p.is_dealer else f"{results[3]} {results[0]}"
 
     if end:
-        if p1.sum_hand() == dealer.sum_hand():
-            return "TIE!"
-        return "player" if 21 - p1.sum_hand() < 21 - dealer.sum_hand() else "dealer"
+        if players[0].sum_hand() == players[1].sum_hand():
+            return results[2]
+        return results[1] if 21 - players[0].sum_hand() < 21 - players[1].sum_hand() else results[0]
 
     return "continue"
 
-def dealer_play():
+def dealer_play(player):
     print("Dealer plays...")
-    dealer.show_hand(False)
-    print(f"Dealer sum: {dealer.sum_hand()}")
+    player.show_hand(False)
+    print(f"Dealer sum: {player.sum_hand()}")
 
-    while 21 > dealer.sum_hand() < 17:
+    while 21 > player.sum_hand() < 17:
         print("Dealer hits.")
-        dealer.hand.append(cards.give_card())
-        dealer.show_hand(False)
-        print(f"Dealer sum: {dealer.sum_hand()}")
+        player.hand.append(cards.give_card())
+        player.show_hand(False)
+        print(f"Dealer sum: {player.sum_hand()}")
+
+# start game
+cards = deck.Deck()
+cards.shuffle_deck()
+
+player_one = player.Player(False, cards.give_start_hand())
+dealer = player.Player(True, cards.give_start_hand())
 
 while True:
-    bet = p1.take_bet()
-    print(bet)
-    if bet.startswith("B"): break
+    cash = player_one.take_cash()
+    print(cash)
+    if not cash.startswith("E"): break
 
+# game main loop
 while True:
-    show_hands([dealer, p1])
-    print(f"Player sum: {p1.sum_hand()}")
-    status = check_results(False)
-    if status != "continue":
-        print(f"{status} wins!")
+    if player_one.cash == 0:
+        print("Game Over!")
         break
-    again = play_again()
-    if not again:
-        dealer_play()
-        status = check_results(True)
-        print(f"{status} wins!")
+
+    cards = deck.Deck()
+    cards.shuffle_deck()
+    player_one.hand = cards.give_start_hand()
+    dealer.hand = cards.give_start_hand()
+
+    while True:
+        bet = player_one.take_bet()
+        print(bet)
+        if bet.startswith("B"): break
+
+    while True:
+        show_hands([dealer, player_one])
+        print(f"Player sum: {player_one.sum_hand()}")
+        result = check_results(False, [player_one, dealer])
+        if result != "continue":
+            print(result)
+            print(f"Player cash: {calculate_bet(result, player_one)}")
+            break
+        again = play_again(player_one)
+        if not again:
+            dealer_play(dealer)
+            result = check_results(True, [player_one, dealer])
+            print(result)
+            print(f"Player cash left: {calculate_bet(result, player_one)}")
+            break
+
+    answer = input("Keep playing? (y/n) ")
+    if answer.strip().startswith("n"):
+        print(f"Ending sum: {player_one.cash}. See you!")
         break
